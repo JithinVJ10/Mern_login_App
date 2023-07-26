@@ -4,6 +4,7 @@ const app = express()
 const cookieParser = require('cookie-parser')
 const connectDB = require('./config/database')
 const userRoute = require('./routes/userRoute')
+const adminRoute = require('./routes/adminUser')
 const errorMidddleware = require('./middleware/errorMiddleware')
 
 
@@ -17,10 +18,13 @@ connectDB()
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
+
+
 app.use(cookieParser())
 
 // User Route set
 app.use('/api/users',userRoute)
+app.use('/api/admin',adminRoute)
 
 app.get('/', (req,res)=> res.send('Welcome to Home'))
 

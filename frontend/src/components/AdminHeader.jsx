@@ -3,12 +3,15 @@ import { FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
 import {LinkContainer} from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
-import { logout,logoutAdmin } from '../slices/authSlice';
+import { logout } from '../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { Admin } from '../AdminContext/adminContext';
+import { useContext } from 'react';
 
-const Header = () => {
-  const {userInfo} = useSelector((state)=>state.auth)
-  const {adminInfo} = useSelector((state)=>state.auth)
+
+const AdminHeader = () => {
+  
+    const {adminData} = useContext(Admin)
 
   const [logoutApiCall] = useLogoutMutation()
 
@@ -16,22 +19,12 @@ const Header = () => {
   const navigate = useNavigate()
 
   const logoutHandler = async ()=>{
-    if (userInfo) {
-      try {
-        await logoutApiCall().unwrap()
-        dispatch(logout())
-        navigate('/')
-      } catch (err) {
-        console.log(err);
-      }
-    } else if(adminInfo){
-      try {
-        await logoutApiCall().unwrap()
-        dispatch(logoutAdmin())
-        navigate('/admin')
-      } catch (err) {
-        console.log(err);
-      }
+    try {
+      await logoutApiCall().unwrap()
+      dispatch(logout())
+      navigate('/')
+    } catch (err) {
+      console.log(err);
     }
 
   }
@@ -46,9 +39,9 @@ const Header = () => {
           <Navbar.Collapse id='basic-navbar-nav'>
             <Nav className='ms-auto'>
 
-            {userInfo || adminInfo ? (
+            {adminData ? (
                 <>
-                  <NavDropdown title={userInfo?.name || adminInfo?.adminName} id='username'>
+                  <NavDropdown title={adminData.name} id='username'>
                     <LinkContainer to='/profile'>
                       <NavDropdown.Item>Profile</NavDropdown.Item>
                     </LinkContainer>
@@ -80,4 +73,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default AdminHeader;

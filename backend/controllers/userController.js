@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../models/userModel')
 const generateToken = require('../utils/generateToken')
+const fs = require('fs')
 
 // POST - Login user
 exports.authUser = asyncHandler(async (req,res)=>{
@@ -74,22 +75,47 @@ exports.getUserProfile = asyncHandler(async (req,res)=>{
 // PUT - update user profile
 exports.updateUserProfile = asyncHandler(async (req,res)=>{
     const { _id } = req.user
+    console.log(_id);
     
-    const user = await User.findbyId(_id)
+    const user = await User.findById(_id)
 
-    if (user) {
-        user.name = req.body.name || user.name
-        user.email = req.body.email || user.email
+    let new_image = '';
+    
+    try {
         
-        if (req.body.password) {
-            user.password = req.body.password
+        if (req.file ) { // Check if the file is uploaded and has a filename
+          new_image = req.file.filename;
+          try {
+            fs.unlinkSync('./uploads/' + req.body.photo);
+          } catch (error) {     
+            console.log(error);
+          }
+        }else{
+            new_image= req.body.photo;
         }
-        const updatedUser = user.save()
+       
+    
+      } catch (error) {
+        console.log(error);
+      }
 
-        res.status(200).json({
-            _id : updatedUser._id,
-            name : updatedUser.name,
-            email : updatedUser.email,
+    if(user){
+       user.name=req.body.name || user.name
+       user.email=req.body.email || user.email
+        user.photo= new_image || user.photo
+        if(req.body.password){
+            user.password=req.body.password
+        } 
+
+        const updatedUser =await user.save()
+      
+        res.status(201).json({
+            _id:updatedUser._id,
+            name:updatedUser.name,
+            email:updatedUser.email,
+            password:updatedUser.password,
+            photo:updatedUser.photo
+            
         })
     } else {
         res.status(404)
@@ -97,6 +123,6 @@ exports.updateUserProfile = asyncHandler(async (req,res)=>{
     }
 
 
-    // res.status(200).json({message:" Update User Profile"})
+    
 })
 

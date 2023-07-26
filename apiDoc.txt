@@ -1,7 +1,20 @@
 API Documents
 
+Client
+
 POST - /api/users - Register users
 POST - /api/users/auth - login and get token
 POST - /api/users/logout - logout user and clear cookie
 GET - /api/users/profile - get user profile
-PUT - api/users/profile - update user profile
+PUT - /api/users/profile - update user profile
+
+Admin
+
+GET READ - /api/admin 
+POST Login - /api/admin/adminLogin
+POST Create - /api/admin/create
+PUT Update - /api/admin/updateUser
+DELETE - /api/admin/removeUser
+
+
+
